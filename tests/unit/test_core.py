@@ -169,9 +169,13 @@ def test_shell_exec_cmd_connection_failure(core, fake_key):
 
 def test_deploy_python_expands_archive_with_force(core, fake_key, tmp_path):
     import logging
+    import zipfile
 
+    # the real Salt-Env zips are optional artifacts not carried in the
+    # repository - build a minimal fake zip for the deployment path
     python_env = tmp_path / "Salt-Env-3008-AMD64-Py3.zip"
-    python_env.write_bytes(b"zip payload")
+    with zipfile.ZipFile(python_env, "w") as fake_zip:
+        fake_zip.writestr("bin/python.exe", "fake python payload")
 
     commands = []
     records = []
@@ -179,6 +183,8 @@ def test_deploy_python_expands_archive_with_force(core, fake_key, tmp_path):
     handler = logging.Handler()
     handler.emit = lambda record: records.append(record.getMessage())
     core.log.addHandler(handler)
+    log_level = core.log.level
+    core.log.setLevel(logging.DEBUG)
     try:
         shell = core.Shell({}, "goodhost", user="admin", priv=fake_key, winrm=True)
         shell.send = lambda local, remote, makedirs=False: ("sent", "", 0)
@@ -195,6 +201,7 @@ def test_deploy_python_expands_archive_with_force(core, fake_key, tmp_path):
         assert core.deploy_python(wrapper) is True
     finally:
         core.log.removeHandler(handler)
+        core.log.setLevel(log_level)
 
     expand_cmd = [c for c in commands if "ExtractToFile" in c][0]
     assert "-Force" in expand_cmd  # fallback path keeps -Force semantics
