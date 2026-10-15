@@ -205,7 +205,10 @@ def test_deploy_python_expands_archive_with_force(core, fake_key, tmp_path):
 
     expand_cmd = [c for c in commands if "ExtractToFile" in c][0]
     assert "-Force" in expand_cmd  # fallback path keeps -Force semantics
-    assert "System.IO.Compression.ZipFileExtensions]::ExtractToFile($entry, $target, $true)" in expand_cmd
+    assert (
+        "System.IO.Compression.ZipFileExtensions]::ExtractToFile($entry, $target, $true)"
+        in expand_cmd
+    )
     assert "bin.zip" in expand_cmd
     assert wrapper.python_dir in expand_cmd
     assert "Expand-Archive" in expand_cmd  # fallback present in the command
