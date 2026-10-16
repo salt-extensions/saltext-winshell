@@ -250,7 +250,7 @@ class Connection:
         self.user = user
         self.key = key
         self.conn = paramiko.client.SSHClient()
-        self.conn.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        self.conn.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # nosec B507
         self.connected = False
         if not self.key or not os.path.isfile(self.key):
             raise salt.exceptions.SaltConfigurationError(
