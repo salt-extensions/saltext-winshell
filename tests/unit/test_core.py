@@ -5,8 +5,11 @@ paramiko and scp are stubbed so the tests run without the real clients
 installed; the Connection behavior is exercised through fakes.
 '''
 
-import os
+import importlib
+import logging
+import sys
 import types
+import zipfile
 
 import pytest
 import salt.exceptions
@@ -19,7 +22,7 @@ class _FakeSSHClient:
     def set_missing_host_key_policy(self, policy):
         self.policy = policy
 
-    def connect(self, host, username, key_filename):
+    def connect(self, host, username, key_filename):  # pylint: disable=unused-argument
         if host == "badhost":
             raise OSError("connection refused")
         self.connected = True
@@ -38,11 +41,9 @@ scp_stub.SCPClient = object
 
 @pytest.fixture
 def core():
-    import sys
     sys.modules.setdefault("paramiko", paramiko_stub)
     sys.modules.setdefault("scp", scp_stub)
-    import saltext.winshell.core as core_mod
-    return core_mod
+    return importlib.import_module("saltext.winshell.core")
 
 
 @pytest.fixture
@@ -101,13 +102,13 @@ def connected_connection(core, fake_key):
     return conn
 
 
-def test_cmd_exec_shim_return_codes(core, connected_connection):
+def test_cmd_exec_shim_return_codes(connected_connection):
     connected_connection.conn.exec_command = lambda cmd: (
         None,
         RecordingStdout("deploy\nmore"),
         RecordingStdout(""),
     )
-    ret, err, code = connected_connection.cmd_exec("shim deploy")
+    _, _, code = connected_connection.cmd_exec("shim deploy")
     assert code == 11
 
     connected_connection.conn.exec_command = lambda cmd: (
@@ -115,43 +116,43 @@ def test_cmd_exec_shim_return_codes(core, connected_connection):
         RecordingStdout("ext_mods\n"),
         RecordingStdout(""),
     )
-    ret, err, code = connected_connection.cmd_exec("shim ext_mods")
+    _, _, code = connected_connection.cmd_exec("shim ext_mods")
     assert code == 13
 
 
-def test_cmd_exec_err_makes_failure(core, connected_connection):
+def test_cmd_exec_err_makes_failure(connected_connection):
     connected_connection.conn.exec_command = lambda cmd: (
         None,
         RecordingStdout("output"),
         RecordingStdout("some error"),
     )
-    ret, err, code = connected_connection.cmd_exec("run something")
+    _, _, code = connected_connection.cmd_exec("run something")
     assert code == 1
 
 
-def test_cmd_exec_warning_is_not_failure(core, connected_connection):
+def test_cmd_exec_warning_is_not_failure(connected_connection):
     connected_connection.conn.exec_command = lambda cmd: (
         None,
         RecordingStdout("output"),
         RecordingStdout("WARNING: ignore me"),
     )
-    ret, err, code = connected_connection.cmd_exec("run something")
+    _, _, code = connected_connection.cmd_exec("run something")
     assert code == 0
 
 
 def test_cmd_exec_connect_failure(core, fake_key):
     conn = core.Connection("badhost", "admin", key=fake_key)
-    ret, err, code = conn.cmd_exec("anything")
+    _, err, code = conn.cmd_exec("anything")
     assert code == 1
     assert "Unable to connect to badhost" in err
 
 
-def test_shell_send_raises_after_retries(core, monkeypatch, connected_connection, fake_key):
+def test_shell_send_raises_after_retries(core, monkeypatch, connected_connection):
     monkeypatch.setattr(core.time, "sleep", lambda seconds: None)
     shell = core.Shell({}, "goodhost", user="admin", winrm=True)
     shell._conn = connected_connection
 
-    def failing_send(local, remote):
+    def failing_send(_local, _remote):
         return None, "scp boom", 1
 
     monkeypatch.setattr(connected_connection, "send", failing_send)
@@ -162,15 +163,12 @@ def test_shell_send_raises_after_retries(core, monkeypatch, connected_connection
 
 def test_shell_exec_cmd_connection_failure(core, fake_key):
     shell = core.Shell({}, "badhost", user="admin", priv=fake_key, winrm=True)
-    ret, err, code = shell.exec_cmd("dir")
+    _, err, code = shell.exec_cmd("dir")
     assert code == 1
     assert "Unable to connect to badhost" in err
 
 
 def test_deploy_python_expands_archive_with_force(core, fake_key, tmp_path):
-    import logging
-    import zipfile
-
     # the real Salt-Env zips are optional artifacts not carried in the
     # repository - build a minimal fake zip for the deployment path
     python_env = tmp_path / "Salt-Env-3008-AMD64-Py3.zip"
