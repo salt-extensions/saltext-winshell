@@ -130,7 +130,7 @@ dmypy.json
 .pyre/
 
 # Ignore the setuptools_scm auto-generated version module
-src/winshell/version.py
+src/saltext/winshell/version.py
 
 # Ignore CI generated artifacts
 artifacts/

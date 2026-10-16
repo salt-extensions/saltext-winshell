@@ -1,9 +1,9 @@
-'''
+"""
 Unit tests for winshell.core - the salt-ssh Windows shell integration.
 
 paramiko and scp are stubbed so the tests run without the real clients
 installed; the Connection behavior is exercised through fakes.
-'''
+"""
 
 import importlib
 import logging

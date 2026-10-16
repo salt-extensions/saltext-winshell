@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
 """
 Core functions to impliment the salt windows shell
 """
+
 # Copyright 2021 VMware, Inc.
 # SPDX-License-Identifier: Apache-2.0
 
