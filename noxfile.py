@@ -212,7 +212,7 @@ def tests(session):
             "-o",
             str(COVERAGE_REPORT_PROJECT),
             "--omit=tests/*",
-            "--include=src/winshell/*",
+            "--include=src/saltext/winshell/*",
         )
         # Generate report for tests code coverage
         session.run(
@@ -220,16 +220,16 @@ def tests(session):
             "xml",
             "-o",
             str(COVERAGE_REPORT_TESTS),
-            "--omit=src/winshell/*",
+            "--omit=src/saltext/winshell/*",
             "--include=tests/*",
         )
         try:
-            session.run("coverage", "report", "--show-missing", "--include=src/winshell/*")
+            session.run("coverage", "report", "--show-missing", "--include=src/saltext/winshell/*")
             # If you also want to display the code coverage report on the CLI
             # for the tests, comment the call above and uncomment the line below
             # session.run(
             #    "coverage", "report", "--show-missing",
-            #    "--include=src/winshell/*,tests/*"
+            #    "--include=src/saltext/winshell/*,tests/*"
             # )
         finally:
             # Move the coverage DB to artifacts/coverage in order for it to be archived by CI
