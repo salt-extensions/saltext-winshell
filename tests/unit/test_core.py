@@ -62,7 +62,7 @@ class RecordingStdout:
 
 
 def test_env_version_matches_deployed_zips(core):
-    assert core.version == "3008"
+    assert core.ENV_VERSION == "3008"
     shell = core.Shell({}, "win2012dev", user="admin", winrm=True)
     core.set_winvars(shell)
     assert shell.python_env_map["AMD64"] == "Salt-Env-3008-AMD64-Py3.zip"

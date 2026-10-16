@@ -5,4 +5,4 @@
 #     Salt-Env-3008-AMD64-Py3.zip
 # The zips are expected under /extra/salt/saltwinshell on the master
 # (they are intentionally not carried in this repository).
-version = '3008'
+ENV_VERSION = "3008"

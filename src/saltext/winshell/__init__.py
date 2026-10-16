@@ -1,28 +1,40 @@
-# pylint: disable=missing-module-docstring
-import pathlib
+# -*- coding: utf-8 -*-
+'''
+Compatibility shim for Salt's agentless Windows support.
 
-PACKAGE_ROOT = pathlib.Path(__file__).resolve().parent
-try:
-    from .version import __version__
-except ImportError:  # pragma: no cover
-    __version__ = "0.0.0.not-installed"
-    try:
-        from importlib.metadata import version, PackageNotFoundError
+Salt (3006/3008) imports this module by its original name whenever a
+roster entry carries ``winrm: True``::
 
-        try:
-            __version__ = version(__name__)
-        except PackageNotFoundError:
-            # package is not installed
-            pass
-    except ImportError:
-        try:
-            from pkg_resources import get_distribution, DistributionNotFound
+    salt/client/ssh/shell.py:   import saltwinshell
+    salt/client/ssh/__init__.py:    import saltwinshell
 
-            try:
-                __version__ = get_distribution(__name__).version
-            except DistributionNotFound:
-                # package is not installed
-                pass
-        except ImportError:
-            # pkg resources isn't even available?!
-            pass
+The implementation now lives in the :mod:`winshell` package; this shim
+re-exports the interface Salt calls so existing masters keep working
+without patching Salt.
+'''
+# Copyright 2021 VMware, Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+from saltext.winshell.core import (  # noqa: F401
+    SSH_PS_SHIM,
+    Shell,
+    Connection,
+    call_python,
+    deploy_python,
+    gen_shim,
+    get_target_shim_file,
+    set_winvars,
+)
+from saltext.winshell.env_version import ENV_VERSION  # noqa: F401
+
+__all__ = [
+    "SSH_PS_SHIM",
+    "Shell",
+    "Connection",
+    "call_python",
+    "deploy_python",
+    "gen_shim",
+    "get_target_shim_file",
+    "set_winvars",
+    "ENV_VERSION",
+]

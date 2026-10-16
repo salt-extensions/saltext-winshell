@@ -18,8 +18,8 @@ def __virtual__():
     # The core library needs paramiko/scp; surface a useful message when
     # they are missing instead of failing later at ssh time
     try:
-        import paramiko  # noqa: F401
-        import scp  # noqa: F401
+        import paramiko  # pylint: disable=import-outside-toplevel,unused-import
+        import scp  # pylint: disable=import-outside-toplevel,unused-import
     except ImportError as exc:
         return False, f"The winshell execution module cannot be loaded: {exc}"
     return __virtualname__
@@ -35,4 +35,4 @@ def version():
 
         salt '*' winshell.version
     """
-    return {"package": __version__, "env": saltext.winshell.core.version}
+    return {"package": __version__, "env": saltext.winshell.core.ENV_VERSION}
