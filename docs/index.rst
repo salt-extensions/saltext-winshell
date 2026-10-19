@@ -9,6 +9,7 @@ Salt Extension for interacting with windows via salt-ssh
   :hidden:
 
   topics/installation
+  topics/windows-hosts
 
 .. toctree::
   :maxdepth: 2
