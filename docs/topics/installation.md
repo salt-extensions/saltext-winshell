@@ -6,19 +6,19 @@ Generally, extensions need to be installed into the same Python environment Salt
 ```yaml
 Install Salt Winshell extension:
   pip.installed:
-    - name: winshell
+    - name: saltext-winshell
 ```
 :::
 
 :::{tab} Onedir installation
 ```bash
-salt-pip install winshell
+salt-pip install saltext-winshell
 ```
 :::
 
 :::{tab} Regular installation
 ```bash
-pip install winshell
+pip install saltext-winshell
 ```
 :::
 

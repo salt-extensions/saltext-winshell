@@ -14,7 +14,7 @@ loaders:
   - module
   - state
 max_salt_version: '3008'
-no_saltext_namespace: true
+no_saltext_namespace: false
 os_support:
   - Linux
   - Windows
@@ -22,7 +22,7 @@ package_name: winshell
 project_name: winshell
 python_requires: '3.10'
 relax_pylint: false
-salt_version: '3008'
+salt_version: '3006'
 source_url: https://github.com/salt-extensions/saltext-winshell
 ssh_fixtures: true
 summary: Salt Extension for interacting with windows via salt-ssh

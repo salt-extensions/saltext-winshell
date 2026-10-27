@@ -32,7 +32,7 @@ SKIP_REQUIREMENTS_INSTALL = os.environ.get("SKIP_REQUIREMENTS_INSTALL", "0") == 
 EXTRA_REQUIREMENTS_INSTALL = os.environ.get("EXTRA_REQUIREMENTS_INSTALL")
 
 COVERAGE_REQUIREMENT = os.environ.get("COVERAGE_REQUIREMENT") or "coverage==7.14.3"
-SALT_REQUIREMENT = os.environ.get("SALT_REQUIREMENT") or "salt>=3008"
+SALT_REQUIREMENT = os.environ.get("SALT_REQUIREMENT") or "salt>=3006"
 if SALT_REQUIREMENT == "salt==master":
     SALT_REQUIREMENT = "git+https://github.com/saltstack/salt.git@master"
 

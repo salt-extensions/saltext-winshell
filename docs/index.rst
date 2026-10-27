@@ -1,5 +1,5 @@
-``winshell``: Integrate Salt with Winshell
-==========================================
+``saltext-winshell``: Integrate Salt with Winshell
+==================================================
 
 Salt Extension for interacting with windows via salt-ssh
 
